@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "nnm.h"
+#include "nnutil.h"
 #include "nn.h"
 
 /* 
@@ -10,21 +10,21 @@
 void init_layer(ANN_layer* layer, int n_units, int n_units_prev) {
 	int n_weights = n_units * n_units_prev; // we have n_units * n_units_prev weights
 	if (n_weights == 0) {
-		printf("ERROR: IMPOSSIBLE TO INSTANCE LAYER!\n");
+		fprintf(stderr, "FATAL: Impossible to instance layer\n");
 		return;
 	}
 	layer->n_units = n_units;
-	layer->w = (double*) malloc(sizeof(double)*n_weights);
-	layer->b = (double*) malloc(sizeof(double)*n_units);
-	layer->a = (double*) malloc(sizeof(double)*n_units);
-	layer->s = (double*) malloc(sizeof(double)*n_units);
-	layer->delta = (double*) malloc(sizeof(double)*n_units);
+	layer->w = (double*) calloc(n_weights, sizeof(double)*n_weights);
+	layer->b = (double*) calloc(n_units, sizeof(double)*n_units);
+	layer->a = (double*) calloc(n_units, sizeof(double)*n_units);
+	layer->s = (double*) calloc(n_units, sizeof(double)*n_units);
+	layer->delta = (double*) calloc(n_units, sizeof(double)*n_units);
 
 	for (int i=0;i<n_units*n_units_prev;i++) {
 		// Weight initialization must be changed to improve training...
-		layer->w[i]	= rand_double(); // -1, +1
+		layer->w[i]	= xavier_glorot(n_units_prev, n_units); //rand_double(); // -1, +1
 		if (i < n_units)
-			layer->b[i] = rand_double();	
+			layer->b[i] = drand();	
 	}
 }
 
@@ -42,18 +42,6 @@ void eval_layer(ANN_layer* layer, double* input, int n_inputs) {
 		layer->s[j] = tmp_sum; // linear combination
 		layer->a[j] = sigmoid(tmp_sum); // activation
 	}	
-}
-
-/* 
-	Deallocates a single layer. 
-*/
-void destroy_layer(ANN_layer* layer) {
-	free(layer->w);
-	free(layer->b);
-	free(layer->a);
-	free(layer->s);
-	free(layer->delta);
-	free(layer);
 }
 
 /* 
@@ -95,6 +83,19 @@ void backward(ANN* ann, double* true_vals) {
 		} 	
 	}
 }
+
+/* 
+	Deallocates a single layer. 
+*/
+void destroy_layer(ANN_layer* layer) {
+	free(layer->w);
+	free(layer->b);
+	free(layer->a);
+	free(layer->s);
+	free(layer->delta);
+	free(layer);
+}
+
 
 void destroy_ANN(ANN* ann) {
 	for (int l=0; l<ann->n_layers; l++)
