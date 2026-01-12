@@ -13,7 +13,6 @@ void init_layer(ANN_layer* layer, int n_units, int n_units_prev) {
 		printf("ERROR: IMPOSSIBLE TO INSTANCE LAYER!\n");
 		return;
 	}
-
 	layer->n_units = n_units;
 	layer->w = (double*) malloc(sizeof(double)*n_weights);
 	layer->b = (double*) malloc(sizeof(double)*n_units);
@@ -70,11 +69,31 @@ void forward(ANN* ann, double* input) {
 }
 
 /* 
-	Computes the errors and backpropagates it into the network. Actually it uses the MSE function. 
+	Computes the errors and backpropagates it into the network. Actually it uses the SQUARE SUM function. 
 	NOTE: consider to pass 'loss_fn' and use it to compute the error.
 */
-void backward(ANN* ann) {
-	//... 
+void backward(ANN* ann, double* true_vals) {
+	int n_layers = ann->n_layers;
+	for (int l=n_layers-1; l>=0; l--) {
+		int n_units = ann->layer[l]->n_units;
+		// The first layer must have a proper computation which depends on the loss function. Others are recursive.		
+		for (int j=0;j<n_units; j++) {
+			double unit_a = ann->layer[l]->a[j];
+			double unit_s = ann->layer[l]->s[j];
+			if (l == n_layers-1) {
+				ann->layer[l]->delta[j] = 2.0 * (unit_a - true_vals[j]) * d_sigmoid(unit_s); // dL/dI * da/ds
+			} else {	
+				int n_units_next = ann->layer[l+1]->n_units;
+				double e = 0.0;
+				// Using next layer
+				for (int k=0;k<n_units_next; k++) {
+					e += ann->layer[l+1]->delta[k] * ann->layer[l+1]->w[k+j*n_units_next]; // CRITICAL 
+				}
+				e *= d_sigmoid(ann->layer[l]->s[j]);
+				ann->layer[l]->delta[j] = e;
+			}	
+		} 	
+	}
 }
 
 void destroy_ANN(ANN* ann) {

@@ -32,7 +32,7 @@ typedef struct ANN {
 } ANN;
 
 void forward(ANN* ann, double* input);
-void backward(ANN* ann);
+void backward(ANN* ann, double* true_vals);
 void destroy_ANN(ANN* ann);
 
 void train_ANN(ANN* ann, void* data); // TODO: think how to pass the dataset. Create a struct? Is it necessary?
