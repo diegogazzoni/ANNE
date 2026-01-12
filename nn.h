@@ -2,29 +2,37 @@
 
 // =================================== Layers ======================================
 typedef struct ANN_layer {
-	int n_units;
-
+	int n_units; // number of neurons
+	
 	double* w; // weights connecting the i-1 layer with the current one i-th. Dimensions: n_prev x n_units
-	double* b; // biases on the current layer
-	double* act; // activation fun(sum). Sigmoid actually
-	double* sum; // weighted sum
-	double* delta; // error vector
-
+	double* b; // biases 
+	double* a; // activation fun(sum). Sigmoid actually
+	double* s; // weighted sum
+	double* delta; // error vector for backprop
+	
 } ANN_layer;
 
-/* Creates a neural layer. If has_prev, the layer is internal and weights are assigned. If not, weights are not assigned since it is the first layer. */
-void init_ANN_layer(ANN_layer* layer, int n_units, uint8_t has_prev);
+/* Creates a neural layer with n_units neurons. */
+void init_layer(ANN_layer* layer, int n_units, int n_units_prev);
+
+/* Evaluates the activations inside the referenced layer */
+void eval_layer(ANN_layer* layer, double* input, int n_inputs);
+
 /* Deallocate the layer. Pay attention if it is used inside a network. */
-void destroy_ANN_layer(ANN_layer* layer);
+void destroy_layer(ANN_layer* layer);
 
 // =================================== Network =====================================
 typedef struct ANN {
-	int n_layers;	
-	ANN_layer* layer;
+	int n_layers;
+	int n_inputs;
+	int n_outputs;
+	ANN_layer** layer;
 
 	double loss_score;
 } ANN;
 
+void forward(ANN* ann, double* input);
+void backward(ANN* ann);
 void destroy_ANN(ANN* ann);
-void forward_ANN(ANN* ann);
+
 void train_ANN(ANN* ann, void* data); // TODO: think how to pass the dataset. Create a struct? Is it necessary?
