@@ -1,12 +1,14 @@
 typedef struct ANN_layer {
 	int n_units; // number of neurons
-	
+	int n_weights; // number of weights
+
 	double* w; // weights connecting the i-1 layer with the current one i-th. Dimensions: n_prev x n_units
 	double* b; // biases 
 	double* a; // activation fun(sum). Sigmoid actually
 	double* s; // weighted sum
 	double* delta; // error vector for backprop
-	
+    
+    double* ba; // accumulator for bias
 	double* ga; // gradient accumulator for SGD
 } ANN_layer;
 

@@ -4,9 +4,7 @@
 #include "nnutil.h"
 #include "nn.h"
 
-/* 
-	Initializes a single layer. 
-*/
+/* Initializes a single layer. */
 void init_layer(ANN_layer* layer, int n_units, int n_units_prev) {
 	int n_weights = n_units * n_units_prev; // we have n_units * n_units_prev weights
 	if (n_weights == 0) {
@@ -14,13 +12,14 @@ void init_layer(ANN_layer* layer, int n_units, int n_units_prev) {
 		return;
 	}
 	layer->n_units = n_units;
-	layer->w = (double*) calloc(n_weights, sizeof(double)*n_weights);
-	layer->b = (double*) calloc(n_units, sizeof(double)*n_units);
-	// Memory pool allocation for a and s --> contiguous in memory
-	layer->a = (double*) calloc(n_units, sizeof(double)*n_units*2);
-	layer->s = (double*) calloc(n_units, sizeof(double)*n_units);
-	layer->delta = (double*) calloc(n_units, sizeof(double)*n_units);
-
+	layer->n_weights = n_weights;
+	layer->ba = (double*) calloc(n_units, sizeof(double));
+	layer->ga = (double*) calloc(n_weights, sizeof(double));
+    layer->w  = (double*) calloc(n_weights, sizeof(double));
+	layer->b  = (double*) calloc(n_units, sizeof(double));
+	layer->a  = (double*) calloc(n_units, sizeof(double));
+	layer->s  = (double*) calloc(n_units, sizeof(double));
+	layer->delta = (double*) calloc(n_units, sizeof(double));
 	for (int i=0;i<n_units*n_units_prev;i++) {
 		// Weight initialization must be changed to improve training...
 		layer->w[i]	= xavier_glorot(n_units_prev, n_units); //rand_double(); // -1, +1
@@ -29,9 +28,7 @@ void init_layer(ANN_layer* layer, int n_units, int n_units_prev) {
 	}
 }
 
-/* 
-	Computes the sum inside neurons. NB: weight matrix has n_prev * n_units dims. 
-*/
+/* Computes the sum inside neurons. NB: weight matrix has n_prev * n_units dims. */
 void eval_layer(ANN_layer* layer, double* input, int n_inputs) {
 	// Cycling on the neurons.
 	for (int j=0; j<layer->n_units; j++) {
@@ -45,9 +42,7 @@ void eval_layer(ANN_layer* layer, double* input, int n_inputs) {
 	}	
 }
 
-/* 
-	Computes the activations and so the network output.
-*/
+/* Computes the activations and so the network output.*/
 void forward(ANN* ann, double* input) {
 	// Activations on the first layer
 	eval_layer(ann->layer[0], input, ann->n_inputs);	
@@ -57,10 +52,8 @@ void forward(ANN* ann, double* input) {
 	}
 }
 
-/* 
-	Computes the errors and backpropagates it into the network. Actually it uses the SQUARE SUM function. 
-	NOTE: consider to pass 'loss_fn' and use it to compute the error.
-*/
+/* Computes the errors and backpropagates it into the network. Actually it uses the SQUARE SUM function. 
+	NOTE: consider to pass 'loss_fn' and use it to compute the error.*/
 void backward(ANN* ann, double* true_vals) {
 	int n_layers = ann->n_layers;
 	for (int l=n_layers-1; l>=0; l--) {
@@ -76,7 +69,7 @@ void backward(ANN* ann, double* true_vals) {
 				double e = 0.0;
 				// Using next layer
 				for (int k=0;k<n_units_next; k++) {
-					e += ann->layer[l+1]->delta[k] * ann->layer[l+1]->w[k+j*n_units_next]; // CRITICAL 
+					e += ann->layer[l+1]->delta[k] * ann->layer[l+1]->w[k+j*n_units_next]; // !!!!  CRITICAL  !!!!
 				}
 				e *= d_sigmoid(ann->layer[l]->s[j]);
 				ann->layer[l]->delta[j] = e;
@@ -85,19 +78,19 @@ void backward(ANN* ann, double* true_vals) {
 	}
 }
 
-/* 
-	Deallocates a single layer. 
-*/
+/* Deallocates a single layer. */
 void destroy_layer(ANN_layer* layer) {
 	free(layer->w);
 	free(layer->b);
 	free(layer->a);
 	free(layer->s);
 	free(layer->delta);
+	free(layer->ba);
+	free(layer->ga);
 	free(layer);
 }
 
-
+/* Deallocates the entire network. */
 void destroy_ANN(ANN* ann) {
 	for (int l=0; l<ann->n_layers; l++)
 		destroy_layer(ann->layer[l]);

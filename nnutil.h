@@ -3,7 +3,7 @@
 
 #define EPS 1e-18
 
-/* ------------ Weight initialization -------------- */
+/* Weight initialization */
 double drand() {
 	double d = (double) RAND_MAX / 2.0;
 	double r = (double) rand();
@@ -18,7 +18,7 @@ double xavier_glorot(int n_in, int n_out) {
 	return n * sigma;
 }
 
-/* ------------- Activation Functions --------------*/
+/*  Activation Functions */
 double sigmoid(double x) {
 	return 1.0/(1.0 + exp(-x));
 }
