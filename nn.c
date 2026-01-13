@@ -16,7 +16,8 @@ void init_layer(ANN_layer* layer, int n_units, int n_units_prev) {
 	layer->n_units = n_units;
 	layer->w = (double*) calloc(n_weights, sizeof(double)*n_weights);
 	layer->b = (double*) calloc(n_units, sizeof(double)*n_units);
-	layer->a = (double*) calloc(n_units, sizeof(double)*n_units);
+	// Memory pool allocation for a and s --> contiguous in memory
+	layer->a = (double*) calloc(n_units, sizeof(double)*n_units*2);
 	layer->s = (double*) calloc(n_units, sizeof(double)*n_units);
 	layer->delta = (double*) calloc(n_units, sizeof(double)*n_units);
 
