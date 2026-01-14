@@ -1,4 +1,4 @@
-#include "nn.h"
+#include "anne.h"
 
 /* Dataset abstractions */
 typedef struct ANN_dataset {
@@ -10,8 +10,6 @@ typedef struct ANN_dataset {
 	double** data; // eg: {{data1}, {data2}, ...}
 	double** ref;
 } ANN_dataset;
-
-double* get_data_sample(ANN_dataset* dataset, int i_batch, i_sample);
 
 /* Minibatch SGD functions */
 void zero_grad_ANN(ANN* ann);

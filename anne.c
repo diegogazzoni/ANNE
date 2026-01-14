@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "nnutil.h"
-#include "nn.h"
+#include "utils.h"
+#include "anne.h"
 
 /* Initializes a single layer. */
 void init_layer(ANN_layer* layer, int n_units, int n_units_prev) {

@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "train.h"
-#include "nn.h"
+#include "anne.h"
 
 /* As the function name says, it resets gradient accumulators to zero. */
 void zero_grad_ANN(ANN* ann) {
