@@ -21,7 +21,7 @@ void init_layer(ANN_layer* layer, int n_units, int n_units_prev) {
 	layer->s  = (double*) calloc(n_units, sizeof(double));
 	layer->delta = (double*) calloc(n_units, sizeof(double));
 	for (int i=0;i<n_units*n_units_prev;i++) {
-		layer->w[i]	= drand(); //xavier_glorot(n_units_prev, n_units); //rand_double(); // -1, +1
+		layer->w[i]	= xavier_glorot(n_units_prev, n_units); //rand_double(); // -1, +1
 		if (i < n_units)
 			layer->b[i] = 0.0;	
 	}
@@ -30,6 +30,7 @@ void init_layer(ANN_layer* layer, int n_units, int n_units_prev) {
 /* Computes the sum inside neurons. NB: weight matrix has n_prev * n_units dims. */
 void eval_layer(ANN_layer* layer, double* input, int n_inputs) {
 	// Cycling on the neurons.
+	// NOTE: n_inputs is the number of previous neurons connected to this layer (if deep)
 	for (int j=0; j<layer->n_units; j++) {
 		// Cycling on all the other neurons connected to it, and computing the sum. It is initialized with the bias.
 		double tmp_sum = layer->b[j];
