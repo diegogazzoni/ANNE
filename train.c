@@ -10,6 +10,7 @@ void zero_grad_ANN(ANN* ann) {
 	// Resets gradients for each layer
 	for (int l=0; l<ann->n_layers; l++) {
 		memset(ann->layer[l]->ga, 0, sizeof(double) * ann->layer[l]->n_weights);
+		memset(ann->layer[l]->ba, 0, sizeof(double) * ann->layer[l]->n_units);	
 	}		
 }
 
@@ -17,10 +18,10 @@ void zero_grad_ANN(ANN* ann) {
 void train_minibatch_sgd(ANN* ann, ANN_dataset* dataset, int n_epochs, double lr) {
 	int epoch = 0;
 	do {
-		fprintf("Epoch n. %d\n", epoch);
+		fprintf(stdout, "Epoch n. %d\n", epoch);
 		// Zero all the gradients before each sample pass through the network.	
 		// Now compute gradient and accumulate
-		for (int b=0; b<dataset->n_batches; b += dataset->batch_size) {
+		for (int b=0; b<dataset->n_samples; b += dataset->batch_size) {
             zero_grad_ANN(ann); 
 			for (int s=0; s<dataset->batch_size; s++) {
 				double* sample = dataset->data[b+s]; // data with sample_dim elements

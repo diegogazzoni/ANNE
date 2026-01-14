@@ -1,3 +1,5 @@
+#ifndef ANNE_H
+#define ANNE_H
 typedef struct ANN_layer {
 	int n_units; // number of neurons
 	int n_weights; // number of weights
@@ -28,3 +30,4 @@ void destroy_layer(ANN_layer* layer);
 void forward(ANN* ann, double* input);
 void backward(ANN* ann, double* true_vals);
 void destroy_ANN(ANN* ann);
+#endif

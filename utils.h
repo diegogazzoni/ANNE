@@ -1,7 +1,10 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <math.h>
 #include <stdlib.h>
 
-#define EPS 1e-18
+#define EPS 1e-12
 
 /* Weight initialization */
 double drand() {
@@ -27,3 +30,5 @@ double d_sigmoid(double x) {
 	double s = sigmoid(x);
 	return s * (1.0-s);
 }
+
+#endif

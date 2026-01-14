@@ -1,3 +1,6 @@
+#ifndef TRAIN_H
+#define TRAIN_H
+
 #include "anne.h"
 
 /* Dataset abstractions */
@@ -14,3 +17,5 @@ typedef struct ANN_dataset {
 /* Minibatch SGD functions */
 void zero_grad_ANN(ANN* ann);
 void train_minibatch_sgd(ANN* ann, ANN_dataset* dataset, int n_epochs, double lr);
+
+#endif

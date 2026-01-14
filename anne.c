@@ -21,10 +21,9 @@ void init_layer(ANN_layer* layer, int n_units, int n_units_prev) {
 	layer->s  = (double*) calloc(n_units, sizeof(double));
 	layer->delta = (double*) calloc(n_units, sizeof(double));
 	for (int i=0;i<n_units*n_units_prev;i++) {
-		// Weight initialization must be changed to improve training...
-		layer->w[i]	= xavier_glorot(n_units_prev, n_units); //rand_double(); // -1, +1
+		layer->w[i]	= drand(); //xavier_glorot(n_units_prev, n_units); //rand_double(); // -1, +1
 		if (i < n_units)
-			layer->b[i] = drand();	
+			layer->b[i] = 0.0;	
 	}
 }
 
