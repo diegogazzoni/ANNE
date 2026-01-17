@@ -2,7 +2,9 @@
 #define ANNE_H
 
 typedef struct ANN_layer {
-	int n_units; // number of neurons
+	char *descr;
+
+    int n_units; // number of neurons
 	int n_weights; // number of weights
 	
 	double (*fn)(double); // function pointer to the selected activation
@@ -26,7 +28,6 @@ typedef struct ANN {
 	
 	double (*loss_fn) (double*, double*, int); // loss function
 	double (*loss_fn_grad) (double, double, int); // derivative of the loss function
-	//double loss_score;
 } ANN;
 
 void init_layer(ANN_layer* layer, double (*act_fn)(double), double (*act_d_fn)(double), int n_units, int n_units_prev);

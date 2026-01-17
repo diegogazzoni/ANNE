@@ -45,7 +45,7 @@ void eval_layer(ANN_layer* layer, double* input, int n_inputs) {
 			tmp_sum += layer->w[j+i*layer->n_units]*input[i];
 		}
 		layer->s[j] = tmp_sum; // linear combination
-		layer->a[j] = (*layer->fn)(tmp_sum); //sigmoid(tmp_sum); // activation
+		layer->a[j] = layer->fn(tmp_sum); // activation
 	}	
 }
 
@@ -70,11 +70,13 @@ void backward(ANN* ann, double* true_vals) {
 			double unit_a = ann->layer[l]->a[j];
 			double unit_s = ann->layer[l]->s[j];
 			if (l == n_layers-1) {
-				ann->layer[l]->delta[j] = 2.0 * (unit_a - true_vals[j]) * (*ann->layer[l]->d_fn)(unit_s); // dL/dI * da/ds
+                double d_loss = ann->loss_fn_grad(unit_a, true_vals[j], n_units); //2.0 * (unit_a - true_vals[j]);
+                double d_act = (*ann->layer[l]->d_fn)(unit_s);
+				ann->layer[l]->delta[j] =  d_loss * d_act; 
 			} else {	
 				int n_units_next = ann->layer[l+1]->n_units;
 				double e = 0.0;
-				// Using next layer
+				// Using next layer (so here we read 'backwards' with respect to the cycle direction)
 				for (int k=0;k<n_units_next; k++) {
 					e += ann->layer[l+1]->delta[k] * ann->layer[l+1]->w[k+j*n_units_next]; // !!!!  CRITICAL  !!!! k+j*n_units_next
 				}

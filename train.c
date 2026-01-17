@@ -31,7 +31,7 @@ void train_minibatch_sgd(ANN* ann, ANN_dataset* dataset, int n_epochs, double lr
 				
 				// Computing activations inside the network
 				forward(ann, sample); // ANN saves n_inputs --> it MUST match with sample_dim!
-				
+			    
 				// Computing backward pass to get errors
 				backward(ann, sample_ref);
 				

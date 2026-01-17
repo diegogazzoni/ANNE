@@ -11,7 +11,7 @@ lib: anne.c train.c utils.h
 TEST_FOLDER = ./test
 TEST_LIBS = -L. -lanne
 test: lib $(TEST_FOLDER)/test_layer.c clean
-	$(CC) -o test/test_layer $(TEST_FOLDER)/test_layer.c $(TEST_LIBS) $(LIBS) $(CFLAGS)
+	$(CC) -o test/exec-test_layer $(TEST_FOLDER)/test_layer.c $(TEST_LIBS) $(LIBS) $(CFLAGS)
 
 clean:
 	rm -r *.o
