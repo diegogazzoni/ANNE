@@ -32,8 +32,9 @@ typedef struct ANN {
 
 void init_layer(ANN_layer* layer, double (*act_fn)(double), double (*act_d_fn)(double), int n_units, int n_units_prev);
 void eval_layer(ANN_layer* layer, double* input, int n_inputs);
-void destroy_layer(ANN_layer* layer);
+void destroy_layer(ANN_layer* layer;
 
+void init_ANN(ANN* ann, int n_inputs, int n_outputs, int n_layers, double (*loss_fn) (double*, double*, int), double (*loss_fn_grad) (double, double, int));
 void forward(ANN* ann, double* input);
 void backward(ANN* ann, double* true_vals);
 void destroy_ANN(ANN* ann);

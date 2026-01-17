@@ -5,6 +5,7 @@
 
 #include "anne.h"
 #include "train.h"
+#include "utils.h"
 
 #define N_INPUTS 100
 #define N_SAMPLES 50000
@@ -133,7 +134,7 @@ int main() {
     int prev_units = N_INPUTS;
     for (int i = 0; i < n_layers; i++) {
         net->layer[i] = (ANN_layer*) malloc(sizeof(ANN_layer));
-        init_layer(net->layer[i], spec[i], prev_units);
+        init_layer(net->layer[i], &sigmoid, &d_sigmoid, spec[i], prev_units);
         prev_units = spec[i];
     }
     
