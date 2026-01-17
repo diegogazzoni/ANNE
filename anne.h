@@ -19,12 +19,14 @@ typedef struct ANN_layer {
 } ANN_layer;
 
 typedef struct ANN {
-	ANN_layer** layer;
+	ANN_layer** layer; // Network layers
 	int n_layers;
 	int n_inputs;
 	int n_outputs;
 	
-	double loss_score;
+	double (*loss_fn) (double*, double*, int); // loss function
+	double (*loss_fn_grad) (double, double, int); // derivative of the loss function
+	//double loss_score;
 } ANN;
 
 void init_layer(ANN_layer* layer, double (*act_fn)(double), double (*act_d_fn)(double), int n_units, int n_units_prev);

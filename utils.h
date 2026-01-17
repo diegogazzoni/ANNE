@@ -3,6 +3,8 @@
 
 #define EPS 1e-3
 
+// TODO: split files for math utils, activation functions and loss functions
+
 /* Weight initialization */
 static double xavier_glorot(int n_in, int n_out) {
 	double u1 = ((double)rand() / (double)RAND_MAX);
@@ -26,4 +28,18 @@ static double sigmoid(double x) {
 static double d_sigmoid(double x) {
 	double s = sigmoid(x);
 	return s * (1.0 - s);
+}
+
+/* Loss functions */
+static double fn_MSE(double *y_pred, double *y_true, int n_samples) {
+	double mse[n_samples];
+
+	for (int n=0;n<n_samples;n++) {
+		mse += (y_pred[n]-y_true[n])*(y_pred[n]-y_true[n]);
+	}
+	return mse / (double) n_samples;
+}
+
+static double grad_MSE(double y_pred, double y_true, int n_samples) {
+	return 2.0 * (y_pred - y_true) / (double) n_samples;
 }
