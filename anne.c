@@ -4,13 +4,17 @@
 #include "utils.h"
 #include "anne.h"
 
-/* Initializes a single layer. */
-void init_layer(ANN_layer* layer, int n_units, int n_units_prev) {
+/* 
+	Initializes a single layer, allocating arrays for weights, outputs and setting the activation function. 
+	Weight initialization is implemented using the standard xavier-glorot algorithm 
+*/
+void init_layer(ANN_layer* layer, double (*act_fn)(double), double (*act_d_fn)(double), int n_units, int n_units_prev) {
 	int n_weights = n_units * n_units_prev; // we have n_units * n_units_prev weights
 	if (n_weights == 0) {
 		fprintf(stderr, "FATAL: Impossible to instance layer\n");
 		return;
-	}
+	}	
+
 	layer->n_units = n_units;
 	layer->n_weights = n_weights;
 	layer->ba = (double*) calloc(n_units, sizeof(double));
@@ -18,10 +22,13 @@ void init_layer(ANN_layer* layer, int n_units, int n_units_prev) {
     layer->w  = (double*) calloc(n_weights, sizeof(double));
 	layer->b  = (double*) calloc(n_units, sizeof(double));
 	layer->a  = (double*) calloc(n_units, sizeof(double));
-	layer->s  = (double*) calloc(n_units, sizeof(double));
+	layer->s  = (double*) calloc(n_units, sizeof(double));	
 	layer->delta = (double*) calloc(n_units, sizeof(double));
+	layer->fn = act_fn;
+	layer->d_fn = act_d_fn;
+
 	for (int i=0;i<n_units*n_units_prev;i++) {
-		layer->w[i]	= xavier_glorot(n_units_prev, n_units); //rand_double(); // -1, +1
+		layer->w[i]	= xavier_glorot(n_units_prev, n_units); 
 		if (i < n_units)
 			layer->b[i] = 0.0;	
 	}
@@ -38,7 +45,7 @@ void eval_layer(ANN_layer* layer, double* input, int n_inputs) {
 			tmp_sum += layer->w[j+i*layer->n_units]*input[i];
 		}
 		layer->s[j] = tmp_sum; // linear combination
-		layer->a[j] = sigmoid(tmp_sum); // activation
+		layer->a[j] = (*layer->fn)(tmp_sum); //sigmoid(tmp_sum); // activation
 	}	
 }
 
@@ -63,7 +70,7 @@ void backward(ANN* ann, double* true_vals) {
 			double unit_a = ann->layer[l]->a[j];
 			double unit_s = ann->layer[l]->s[j];
 			if (l == n_layers-1) {
-				ann->layer[l]->delta[j] = 2.0 * (unit_a - true_vals[j]) * d_sigmoid(unit_s); // dL/dI * da/ds
+				ann->layer[l]->delta[j] = 2.0 * (unit_a - true_vals[j]) * (*ann->layer[l]->d_fn)(unit_s); // dL/dI * da/ds
 			} else {	
 				int n_units_next = ann->layer[l+1]->n_units;
 				double e = 0.0;

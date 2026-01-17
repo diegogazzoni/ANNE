@@ -4,6 +4,7 @@
 
 #include "anne.h"
 #include "train.h"
+#include "utils.h"
 
 #define N_UNITS 2
 #define N_INPUT 5
@@ -13,7 +14,7 @@ int main() {
 	
 	// Layer with 3 neurons, connected to a 5-unit input. Here we will have 15 weights.
     ANN_layer* layer = (ANN_layer*) malloc(sizeof(ANN_layer));
-    init_layer(layer, N_UNITS, N_INPUT);
+    init_layer(layer, &sigmoid, &d_sigmoid, N_UNITS, N_INPUT);
 
 	double input[N_INPUT] = {1, 1, 1, 1, 1}; 
 	eval_layer(layer, input, N_INPUT);

@@ -1,10 +1,17 @@
+# Produces libanne.a (static)
 CC = gcc
 CFLAGS = -Wall -Wextra -O3
-LIBS = -lm
+LIBS = -lm -I.
+COMPILE = $(CC) $(CFLAGS) $(LIBS)	
 
-libanne.a: anne.o train.o
-	$(CC) anne.o train.o $(CFLAGS) $(LIBS)
+lib: anne.c train.c utils.h
+	$(CC) -c anne.c train.c $(CFLAGS) $(LIBS)
+	ar rs libanne.a anne.o train.o
+
+TEST_FOLDER = ./test
+TEST_LIBS = -L. -lanne
+test: lib $(TEST_FOLDER)/test_layer.c clean
+	$(CC) -o test/test_layer $(TEST_FOLDER)/test_layer.c $(TEST_LIBS) $(LIBS) $(CFLAGS)
 
 clean:
-	rm -f $(OBJS) $(LIB_NAME)
-
+	rm -r *.o

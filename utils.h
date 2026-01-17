@@ -4,12 +4,6 @@
 #define EPS 1e-3
 
 /* Weight initialization */
-static double drand() {
-	double d = (double) RAND_MAX / 2.0;
-	double r = (double) rand();
-	return (r - d) / d;
-}
-
 static double xavier_glorot(int n_in, int n_out) {
 	double u1 = ((double)rand() / (double)RAND_MAX);
 	double u2 = ((double)rand() / (double)RAND_MAX);
