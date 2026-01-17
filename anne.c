@@ -69,7 +69,7 @@ void backward(ANN* ann, double* true_vals) {
 				double e = 0.0;
 				// Using next layer
 				for (int k=0;k<n_units_next; k++) {
-					e += ann->layer[l+1]->delta[k] * ann->layer[l+1]->w[k+j*n_units_next]; // !!!!  CRITICAL  !!!!
+					e += ann->layer[l+1]->delta[k] * ann->layer[l+1]->w[k+j*n_units_next]; // !!!!  CRITICAL  !!!! k+j*n_units_next
 				}
 				e *= d_sigmoid(ann->layer[l]->s[j]);
 				ann->layer[l]->delta[j] = e;

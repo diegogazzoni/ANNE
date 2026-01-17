@@ -19,32 +19,43 @@ void train_minibatch_sgd(ANN* ann, ANN_dataset* dataset, int n_epochs, double lr
 	int epoch = 0;
 	do {
 		fprintf(stdout, "Epoch n. %d\n", epoch);
-		// Zero all the gradients before each sample pass through the network.	
-		// Now compute gradient and accumulate
+		// Firstly, get current batch index.
 		for (int b=0; b<dataset->n_samples; b += dataset->batch_size) {
-            zero_grad_ANN(ann); 
+            // Before the network eats a batch, its gradient accumulators need to be zeroed.
+			zero_grad_ANN(ann);
+			// Secondly, get the s-th sample inside the batch
 			for (int s=0; s<dataset->batch_size; s++) {
-				double* sample = dataset->data[b+s]; // data with sample_dim elements
-				double* sample_ref = dataset->ref[b+s];
+				int s_idx = b+s;
+				double* sample = dataset->data[s_idx]; // data with sample_dim elements
+				double* sample_ref = dataset->ref[s_idx];
+				
 				// Computing activations inside the network
 				forward(ann, sample); // ANN saves n_inputs --> it MUST match with sample_dim!
+				
 				// Computing backward pass to get errors
 				backward(ann, sample_ref);
-				// Now we have errors. Updating gradients in each layer.
+				
+				// Updating gradients in each layer.
 				for (int l=0;l<ann->n_layers; l++) {
 					int n_units = ann->layer[l]->n_units;
-					int n_units_prev = ann->n_inputs; // starting from this
+					int n_units_prev = ann->n_inputs; 
 					double* input = sample;
+
+					// If deep layers, use previous act as input
 					if (l > 0) {
 						n_units_prev = ann->layer[l-1]->n_units;
 						input = ann->layer[l-1]->a;
 					}
+
+					// Accumulating weights gradients
 					for (int i=0;i<n_units_prev; i++) {
 						for (int j=0;j<n_units;j++) {
 							ann->layer[l]->ga[j+i*n_units] += (input[i] * ann->layer[l]->delta[j]);
 						}	
-					} 
-                    for (int j = 0; j < n_units; j++) {
+					}
+
+					// Accumulating bias gradients
+                    for (int j=0;j<n_units; j++) {
                         ann->layer[l]->ba[j] += ann->layer[l]->delta[j];
                     }
                 }
