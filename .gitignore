@@ -1,3 +1,3 @@
 libanne.a
-test/exec*
+1-autoencoder/data/*
 *.o
