@@ -14,3 +14,5 @@ test: lib $(TEST_FOLDER)/test_layer.c $(TEST_FOLDER)/test_bp.c
 	$(CC) -o test/exec-test_layer $(TEST_FOLDER)/test_layer.c $(TEST_LIBS) $(LIBS) $(CFLAGS)
 	$(CC) -o test/exec-test_bp $(TEST_FOLDER)/test_bp.c $(TEST_LIBS) $(LIBS) $(CFLAGS)
 
+clean: 
+	rm -f *.o
