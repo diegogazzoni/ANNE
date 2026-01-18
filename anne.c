@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-#include "utils.h"
+#include "aux.h"
 #include "anne.h"
 
 /* 
@@ -49,6 +50,14 @@ void eval_layer(ANN_layer* layer, double* input, int n_inputs) {
 	}	
 }
 
+void init_ANN(ANN* ann, int n_inputs, int n_outputs, int n_layers, double (*loss_fn) (double*, double*, int), double (*loss_fn_grad) (double, double, int)) {
+	ann->n_inputs = n_inputs;
+	ann->n_outputs = n_outputs;
+	ann->n_layers = n_layers;
+	ann->loss_fn = loss_fn;
+	ann->loss_fn_grad = loss_fn_grad;
+}	
+
 /* Computes the activations and so the network output.*/
 void forward(ANN* ann, double* input) {
 	// Activations on the first layer
@@ -71,7 +80,7 @@ void backward(ANN* ann, double* true_vals) {
 			double unit_s = ann->layer[l]->s[j];
 			if (l == n_layers-1) {
                 double d_loss = ann->loss_fn_grad(unit_a, true_vals[j], n_units); //2.0 * (unit_a - true_vals[j]);
-                double d_act = (*ann->layer[l]->d_fn)(unit_s);
+                double d_act = ann->layer[l]->d_fn(unit_s);
 				ann->layer[l]->delta[j] =  d_loss * d_act; 
 			} else {	
 				int n_units_next = ann->layer[l+1]->n_units;
@@ -80,7 +89,7 @@ void backward(ANN* ann, double* true_vals) {
 				for (int k=0;k<n_units_next; k++) {
 					e += ann->layer[l+1]->delta[k] * ann->layer[l+1]->w[k+j*n_units_next]; // !!!!  CRITICAL  !!!! k+j*n_units_next
 				}
-				e *= d_sigmoid(ann->layer[l]->s[j]);
+				e *= ann->layer[l]->d_fn(unit_s);
 				ann->layer[l]->delta[j] = e;
 			}	
 		} 	

@@ -4,7 +4,7 @@ CFLAGS = -Wall -Wextra -O3
 LIBS = -lm -I.
 COMPILE = $(CC) $(CFLAGS) $(LIBS)   
 
-lib: anne.c train.c utils.h
+lib: anne.c train.c aux.h
 	$(CC) -c anne.c train.c $(CFLAGS) $(LIBS)
 	ar rs libanne.a anne.o train.o
 
