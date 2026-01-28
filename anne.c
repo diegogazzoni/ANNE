@@ -79,8 +79,8 @@ void backward(ANN* ann, double* true_vals) {
 			double unit_a = ann->layer[l]->a[j];
 			double unit_s = ann->layer[l]->s[j];
 			if (l == n_layers-1) {
-                double d_loss = ann->loss_fn_grad(unit_a, true_vals[j], n_units); //2.0 * (unit_a - true_vals[j]);
-                double d_act = ann->layer[l]->d_fn(unit_s);
+				double d_loss = ann->loss_fn_grad(unit_a, true_vals[j], n_units); //2.0 * (unit_a - true_vals[j]);
+        double d_act = ann->layer[l]->d_fn(unit_s);
 				ann->layer[l]->delta[j] =  d_loss * d_act; 
 			} else {	
 				int n_units_next = ann->layer[l+1]->n_units;
