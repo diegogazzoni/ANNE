@@ -12,24 +12,26 @@
 #define N_PIXELS (IMG_DIM*IMG_DIM)
 #define MAX_FILES 1024
 
-#define N_EPOCHS 100
-#define LEARNING_RATE 1e1
-#define BATCH_SIZE 1
+#define N_EPOCHS 30
+#define LEARNING_RATE 10.0
+#define BATCH_SIZE 4
 
 ANN* create_AE(int n_inputs) {
     ANN* ae = (ANN*) malloc(sizeof(ANN));
-    init_ANN(ae, n_inputs, n_inputs, 4, fn_MSE, grad_MSE);
+    init_ANN(ae, n_inputs, n_inputs, 5, fn_MSE, grad_MSE);
     
-    ae->layer = (ANN_layer**) malloc(sizeof(ANN_layer*) * 4);
+    ae->layer = (ANN_layer**) malloc(sizeof(ANN_layer*) * 5);
     ae->layer[0] = (ANN_layer*) malloc(sizeof(ANN_layer));
     ae->layer[1] = (ANN_layer*) malloc(sizeof(ANN_layer));
     ae->layer[2] = (ANN_layer*) malloc(sizeof(ANN_layer));
     ae->layer[3] = (ANN_layer*) malloc(sizeof(ANN_layer));
-    
-    init_layer(ae->layer[0], relu, d_relu, 512, n_inputs);
-    init_layer(ae->layer[1], relu, d_relu, 128, 512);
-    init_layer(ae->layer[2], relu, d_relu, 512, 128);
-    init_layer(ae->layer[3], sigmoid, d_sigmoid, n_inputs, 512);
+		ae->layer[4] = (ANN_layer*) malloc(sizeof(ANN_layer));
+
+    init_layer(ae->layer[0], relu, d_relu, 1024, n_inputs);
+    init_layer(ae->layer[1], relu, d_relu, 512, 1024);
+    init_layer(ae->layer[2], relu, d_relu, 256, 512);
+    init_layer(ae->layer[3], relu, d_relu, 512, 256);
+    init_layer(ae->layer[4], sigmoid, d_sigmoid, n_inputs, 512);
     
     return ae;
 }
@@ -200,7 +202,7 @@ static double eval_mse(ANN* ae, ANN_dataset* ds) {
     double total = 0.0;
     for (int i=0; i<ds->n_samples; i++) {
         forward(ae, ds->data[i]);
-        total += fn_MSE(ae->layer[3]->a, ds->ref[i], N_PIXELS);
+        total += fn_MSE(ae->layer[4]->a, ds->ref[i], N_PIXELS);
     }
     return total / ds->n_samples;
 }
@@ -226,11 +228,11 @@ static void test_and_save(ANN* ae, const char* test_dir, const char* out_dir) {
         if (!img) continue;
         
         forward(ae, img);
-        double mse = fn_MSE(ae->layer[3]->a, img, N_PIXELS);
+        double mse = fn_MSE(ae->layer[4]->a, img, N_PIXELS);
         total_mse += mse;
         n++;
         
-        save_pgm(out_path, ae->layer[3]->a);
+        save_pgm(out_path, ae->layer[4]->a);
         printf("  %s -> MSE: %.6f\n", ent->d_name, mse);
         
         free(img);

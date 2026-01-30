@@ -38,5 +38,5 @@ static double fn_MSE(double *y_pred, double *y_true, int n_samples) {
 }
 
 static double grad_MSE(double y_pred, double y_true, int n_samples) {
-	return 2.0 * (y_pred - y_true) / n_samples;
+	return 2.0 * (y_pred - y_true);
 }
