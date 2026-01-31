@@ -16,7 +16,7 @@ typedef struct ANN_layer {
 	double* s; // weighted sum
 	double* delta; // error vector for backprop
     
-    double* ba; // accumulator for bias
+  double* ba; // accumulator for bias
 	double* ga; // gradient accumulator for SGD
 } ANN_layer;
 
