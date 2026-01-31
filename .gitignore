@@ -1,2 +1,4 @@
+1-autoencoder/output
+1-autoencoder/mnist
 libanne.a
 *.o

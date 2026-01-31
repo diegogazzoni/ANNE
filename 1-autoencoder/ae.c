@@ -8,30 +8,38 @@
 #include "train.h"
 #include "fn.h"
 
-#define IMG_DIM 64
+#define IMG_DIM 28
 #define N_PIXELS (IMG_DIM*IMG_DIM)
-#define MAX_FILES 1024
+#define MAX_FILES 1024*8
 
-#define N_EPOCHS 30
-#define LEARNING_RATE 10.0
-#define BATCH_SIZE 4
+#define N_EPOCHS 300
+#define LEARNING_RATE 0.025
+#define BATCH_SIZE 32
+
+#define LATENT_DIM 16
+#define LAST_LAYER 5
+#define DATASET "./mnist"
 
 ANN* create_AE(int n_inputs) {
     ANN* ae = (ANN*) malloc(sizeof(ANN));
-    init_ANN(ae, n_inputs, n_inputs, 5, fn_MSE, grad_MSE);
+    init_ANN(ae, n_inputs, n_inputs, 6, fn_MSE, grad_MSE);
     
-    ae->layer = (ANN_layer**) malloc(sizeof(ANN_layer*) * 5);
+    ae->layer = (ANN_layer**) malloc(sizeof(ANN_layer*) * 6);
     ae->layer[0] = (ANN_layer*) malloc(sizeof(ANN_layer));
     ae->layer[1] = (ANN_layer*) malloc(sizeof(ANN_layer));
     ae->layer[2] = (ANN_layer*) malloc(sizeof(ANN_layer));
     ae->layer[3] = (ANN_layer*) malloc(sizeof(ANN_layer));
 		ae->layer[4] = (ANN_layer*) malloc(sizeof(ANN_layer));
+		ae->layer[5] = (ANN_layer*) malloc(sizeof(ANN_layer));
 
-    init_layer(ae->layer[0], relu, d_relu, 1024, n_inputs);
-    init_layer(ae->layer[1], relu, d_relu, 512, 1024);
-    init_layer(ae->layer[2], relu, d_relu, 256, 512);
-    init_layer(ae->layer[3], relu, d_relu, 512, 256);
-    init_layer(ae->layer[4], sigmoid, d_sigmoid, n_inputs, 512);
+		// Encoder	
+    init_layer(ae->layer[0], relu, d_relu, 128, n_inputs);
+    init_layer(ae->layer[1], relu, d_relu, 64, 128);
+    init_layer(ae->layer[2], relu, d_relu, LATENT_DIM, 64);
+		// Decoder
+    init_layer(ae->layer[3], relu, d_relu, 64, LATENT_DIM);
+		init_layer(ae->layer[4], relu, d_relu, 128, 64);
+    init_layer(ae->layer[5], relu, d_relu, n_inputs, 128);
     
     return ae;
 }
@@ -202,7 +210,7 @@ static double eval_mse(ANN* ae, ANN_dataset* ds) {
     double total = 0.0;
     for (int i=0; i<ds->n_samples; i++) {
         forward(ae, ds->data[i]);
-        total += fn_MSE(ae->layer[4]->a, ds->ref[i], N_PIXELS);
+        total += fn_MSE(ae->layer[LAST_LAYER]->a, ds->ref[i], N_PIXELS);
     }
     return total / ds->n_samples;
 }
@@ -219,6 +227,7 @@ static void test_and_save(ANN* ae, const char* test_dir, const char* out_dir) {
     
     while ((ent = readdir(d))) {
         if (!is_pgm(ent->d_name)) continue;
+        if (n > MAX_FILES) break;
         
         char in_path[256], out_path[256];
         snprintf(in_path, 256, "%s/%s", test_dir, ent->d_name);
@@ -228,11 +237,11 @@ static void test_and_save(ANN* ae, const char* test_dir, const char* out_dir) {
         if (!img) continue;
         
         forward(ae, img);
-        double mse = fn_MSE(ae->layer[4]->a, img, N_PIXELS);
+        double mse = fn_MSE(ae->layer[LAST_LAYER]->a, img, N_PIXELS);
         total_mse += mse;
         n++;
         
-        save_pgm(out_path, ae->layer[4]->a);
+        save_pgm(out_path, ae->layer[LAST_LAYER]->a);
         printf("  %s -> MSE: %.6f\n", ent->d_name, mse);
         
         free(img);
@@ -247,7 +256,7 @@ int main() {
     printf("=== Autoencoder Training ===\n");
     printf("Loading dataset from train/...\n");
     
-    ANN_dataset* train_ds = load_dataset("train", BATCH_SIZE);
+    ANN_dataset* train_ds = load_dataset(DATASET, BATCH_SIZE);
     if (!train_ds) {
         fprintf(stderr, "Failed to load train dataset\n");
         return 1;
@@ -265,9 +274,9 @@ int main() {
     
     double final_mse = eval_mse(ae, train_ds);
     printf("\nFinal Train MSE: %.6f\n", final_mse);
-    
+		
     printf("\nTesting...\n");
-    test_and_save(ae, "test", "output");
+    test_and_save(ae, DATASET, "output");
     
     printf("\nCleaning up...\n");
     free_dataset(train_ds);

@@ -55,10 +55,10 @@ void train_minibatch_sgd(ANN* ann, ANN_dataset* dataset, int n_epochs, double lr
 					}
 
 					// Accumulating bias gradients
-                    for (int j=0;j<n_units; j++) {
-                        ann->layer[l]->ba[j] += ann->layer[l]->delta[j];
-                    }
-                }
+              for (int j=0;j<n_units; j++) {
+                  ann->layer[l]->ba[j] += ann->layer[l]->delta[j];
+              }
+          }
 			}
 			// Update weights and biases
 			for (int l=0; l<ann->n_layers; l++) {
