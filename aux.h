@@ -3,8 +3,6 @@
 
 #define EPS 1e-3
 
-// TODO: split files for math utils, activation functions and loss functions
-
 /* Weight initialization */
 static double xavier_glorot(int n_in, int n_out) {
 	double u1 = ((double)rand() / (double)RAND_MAX);

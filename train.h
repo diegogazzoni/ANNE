@@ -16,6 +16,7 @@ typedef struct ANN_dataset {
 
 /* Minibatch SGD functions */
 void zero_grad_ANN(ANN* ann);
+double train_momentum_epoch(ANN* ann, ANN_dataset* dataset, double lr);
 double train_sgd_epoch(ANN* ann, ANN_dataset* dataset, double lr);
 void train(ANN* ann, ANN_dataset* dataset, int n_epochs, double lr);
 

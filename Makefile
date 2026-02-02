@@ -15,3 +15,4 @@ test: lib $(TEST_FOLDER)/ae.c
 
 clean: 
 	rm -f *.o
+	rm -f *.gch
