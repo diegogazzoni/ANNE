@@ -16,11 +16,7 @@ void zero_grad_ANN(ANN* ann) {
 	}		
 }
 
-double train_momentum_epoch(ANN* ann, ANN_dataset* dataset, double lr) {
-	return -1;
-}
-
-/**/
+/* Implements training with momentum. If beta=0, no momentum will be used. */
 double train_sgd_epoch(ANN* ann, ANN_dataset* dataset, double lr) {
 	double loss = 0.0;
 	int n_samples = dataset->n_samples;
@@ -61,7 +57,9 @@ double train_sgd_epoch(ANN* ann, ANN_dataset* dataset, double lr) {
 					n_units_prev = ann->layer[l-1]->n_units;
 					input = ann->layer[l-1]->a;
 				}
-
+				
+					
+			
 				// Accumulating weights gradients
 				for (int i=0;i<n_units_prev; i++) {
 					for (int j=0;j<n_units;j++) {
@@ -77,6 +75,7 @@ double train_sgd_epoch(ANN* ann, ANN_dataset* dataset, double lr) {
 		}
 		loss_batch /= batch_size;
 		loss += loss_batch;
+
 		// Update weights and biases
 		for (int l=0; l<ann->n_layers; l++) {
         for (int n=0; n<ann->layer[l]->n_weights; n++) 

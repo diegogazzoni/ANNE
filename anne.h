@@ -4,7 +4,7 @@
 typedef struct ANN_layer {
 	char *descr;
 
-    int n_units; // number of neurons
+  int n_units; // number of neurons
 	int n_weights; // number of weights
 	
 	double (*fn)(double); // function pointer to the selected activation
@@ -15,7 +15,7 @@ typedef struct ANN_layer {
 	double* a; // activation fun(sum). Sigmoid actually
 	double* s; // weighted sum
 	double* delta; // error vector for backprop
-    
+  
   double* ba; // accumulator for bias
 	double* ga; // gradient accumulator for SGD
 } ANN_layer;
