@@ -4,6 +4,7 @@
 
 #include "aux.h"
 #include "anne.h"
+#include "dataset.h"
 
 /* 
 	Initializes a single layer, allocating arrays for weights, outputs and setting the activation function. 

@@ -1,7 +1,5 @@
-#ifndef TRAIN_H
-#define TRAIN_H
-
-#include "anne.h"
+#ifndef DATASET_H
+#define DATASET_H
 
 /* 
  * This structure represents a base collection of data that can traverse the network. 
@@ -17,12 +15,5 @@ typedef struct ANN_dataset {
 	double** data; // eg: {{data1}, {data2}, ...}
 	double** ref;
 } ANN_dataset;
-
-/* 
- * Defining functions for implementing Batch Stochastic Gradient Descent.
- */
-void zero_grad_ANN(ANN* ann);
-double train_sgd_epoch(ANN* ann, ANN_dataset* dataset, double lr);
-void train(ANN* ann, ANN_dataset* dataset, int n_epochs, double lr);
 
 #endif

@@ -5,6 +5,7 @@
 
 #include "train.h"
 #include "anne.h"
+#include "dataset.h"
 
 /*
  * This is a util function with the purpose of zero-ing all the stored gradients.

@@ -3,7 +3,7 @@
 #include <string.h>
 #include <dirent.h>
 
-#include "train.h"
+#include "dataset.h"
 
 #define MAX_FILES 1e5
 

@@ -1,13 +1,19 @@
-# Produces libanne.a (static)
+# Source folders
+SRC = src
+INCLUDE = include
+BUILD = build
+
+# Library target (produces libanne.a) 
 CC = gcc
 CFLAGS = -Wall -Wextra -O3
-LIBS = -lm -I.
+LIBS = -lm -I. -Iinclude/
 COMPILE = $(CC) $(CFLAGS) $(LIBS)   
 
-lib: anne.c train.c aux.h fn.h
-	$(CC) -c anne.c train.c fn.h $(CFLAGS) $(LIBS)
-	ar rs libanne.a anne.o train.o
+lib: $(SRC)/anne.c $(SRC)/train.c $(INCLUDE)/aux.h $(INCLUDE)/fn.h
+	$(CC) -c $(SRC)/anne.c $(SRC)/train.c $(INCLUDE)/fn.h $(CFLAGS) $(LIBS)
+	ar rs $(BUILD)/libanne.a $(BUILD)/anne.o $(BUILD)/train.o
 
+# Test target
 TEST_FOLDER = ./1-autoencoder
 TEST_LIBS = -L. -lanne
 test: lib $(TEST_FOLDER)/ae.c
