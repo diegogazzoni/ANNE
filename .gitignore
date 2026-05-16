@@ -1,7 +1,10 @@
 1-autoencoder/ae
 1-autoencoder/output
 1-autoencoder/mnist
-libanne.a
+*-*
+*.a
 *.o
 *.gch
 *.exe
+
+include/*.gch

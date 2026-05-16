@@ -2,6 +2,7 @@
 #define TRAIN_H
 
 #include "anne.h"
+#include "dataset.h"
 
 /* 
  * Defining functions for implementing Batch Stochastic Gradient Descent.

@@ -101,7 +101,9 @@ double train_sgd_epoch(ANN* ann, ANN_dataset* dataset, double lr) {
 	return loss / (double) n_batches;
 }
 
-/* Trains a neural network using the stochastic gradient descent method with data batches. */
+/* 
+ * Trains a neural network using the stochastic gradient descent method with data batches. 
+ */
 void train(ANN* ann, ANN_dataset* dataset, int n_epochs, double lr) {
 	for (int e = 1; e < n_epochs+1; e++) {
 		fprintf(stdout, "======= epoch n. %d =======\n", e);
