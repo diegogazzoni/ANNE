@@ -7,4 +7,6 @@
 *.gch
 *.exe
 
-include/*.gch
+TODO.md
+
+src/support/*.gch

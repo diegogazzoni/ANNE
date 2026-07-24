@@ -5,7 +5,6 @@
 
 #include "train.h"
 #include "anne.h"
-#include "dataset.h"
 
 /*
  * This is a util function with the purpose of zero-ing all the stored gradients.
@@ -26,10 +25,8 @@ void zero_grad_ANN(ANN* ann) {
  *                        w_next = w_current - lr * sum_m=1^batch_size (grad(L(w_current))_m)/batch_size
  * Where: lr is the learning ratio (1e-3, typical value), batch_size the number of batches and w_* are weights vectors. L is the loss function.
  */
-double train_sgd_epoch(ANN* ann, ANN_dataset* dataset, double lr) {
+double train_sgd_epoch(ANN* ann, int n_samples, int batch_size, double** input, double** ref, double lr) {
 	double loss = 0.0;
-	int n_samples = dataset->n_samples;
-	int batch_size = dataset->batch_size;
 	if (n_samples % batch_size != 0) {
 		fprintf(stderr, "Batch size must divide n_samples equally.");
 		return -1;
@@ -51,8 +48,8 @@ double train_sgd_epoch(ANN* ann, ANN_dataset* dataset, double lr) {
 		// So, we can gee the s-th sample inside the batch.
 		for (int s=0; s<batch_size; s++) {
 			int s_idx = b+s;
-			double* sample = dataset->data[s_idx]; // data with sample_dim elements
-			double* sample_ref = dataset->ref[s_idx]; // this COULD have the same dimensions of sample (e.g, in autoencoders), but it's not general (e.g, classifiers).
+			double* sample = input[s_idx]; // data with sample_dim elements
+			double* sample_ref = ref[s_idx]; // this COULD have the same dimensions of sample (e.g, in autoencoders), but it's not general (e.g, classifiers).
 			
 			// Computing activations inside the network and the loss score (note: this last is not necessary).
 			forward(ann, sample); // ANN saves n_inputs --> it MUST match with sample_dim!
@@ -93,9 +90,9 @@ double train_sgd_epoch(ANN* ann, ANN_dataset* dataset, double lr) {
 		// Update weights and biases
 		for (int l=0; l<ann->n_layers; l++) {
         for (int n=0; n<ann->layer[l]->n_weights; n++) 
-            ann->layer[l]->w[n] -= lr * ann->layer[l]->ga[n] / dataset->batch_size;
+            ann->layer[l]->w[n] -= lr * ann->layer[l]->ga[n] / batch_size;
         for (int n=0; n<ann->layer[l]->n_units; n++) 
-            ann->layer[l]->b[n] -= lr * ann->layer[l]->ba[n] / dataset->batch_size;
+            ann->layer[l]->b[n] -= lr * ann->layer[l]->ba[n] / batch_size;
     }
 	}
 	return loss / (double) n_batches;
@@ -104,10 +101,10 @@ double train_sgd_epoch(ANN* ann, ANN_dataset* dataset, double lr) {
 /* 
  * Trains a neural network using the stochastic gradient descent method with data batches. 
  */
-void train(ANN* ann, ANN_dataset* dataset, int n_epochs, double lr) {
+void train(ANN* ann, int n_samples, int batch_size, double** input, double** ref, int n_epochs, double lr) {
 	for (int e = 1; e < n_epochs+1; e++) {
 		fprintf(stdout, "======= epoch n. %d =======\n", e);
-		double loss =  train_sgd_epoch(ann, dataset, lr); 
+		double loss =  train_sgd_epoch(ann, n_samples, batch_size, input, ref, lr); 
 		fprintf(stdout, "loss = %lf\n", loss);
 	}
 }

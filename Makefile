@@ -1,16 +1,15 @@
 # Source folders
 SRC = src
-INCLUDE = include
 BUILD = build
 
 # Library target (produces libanne.a) 
 CC = gcc
-CFLAGS = -Wall -Wextra -O3 -I. -Iinclude/
+CFLAGS = -Wall -Wextra -O3 -I. -Isrc/support/ -Isrc/network -Isrc/datastruct
 LIBS = -lm
 COMPILE = $(CC) $(CFLAGS) $(LIBS)   
 
-lib: $(SRC)/anne.c $(SRC)/train.c $(INCLUDE)/aux.h $(INCLUDE)/fn.h
-	$(CC) -c $(SRC)/anne.c $(SRC)/train.c $(INCLUDE)/fn.h $(CFLAGS) $(LIBS)
+lib: $(SRC)/network/anne.c $(SRC)/network/train.c $(SRC)/support/aux.h $(SRC)/support/fn.h
+	$(CC) -c $(SRC)/network/anne.c $(SRC)/network/train.c $(SRC)/support/fn.h $(CFLAGS) $(LIBS)
 	ar rs $(BUILD)/libanne.a anne.o train.o
 
 # Test target

@@ -6,29 +6,29 @@
 /*******************************************/
 
 /* Activation Functions */
-static double zero(double x) {
+static inline double zero(double x) {
     return 0;
 }
 
 // NB: tanh is already present in math.h
-static double d_tanh(double x) {
+static inline double d_tanh(double x) {
     return 1.0 - tanh(x)*tanh(x);
 }
 
-static double sigmoid(double x) {
+static inline double sigmoid(double x) {
 	return 1.0 / (1.0 + exp(-x));
 }
 
-static double d_sigmoid(double x) {
+static inline double d_sigmoid(double x) {
 	double s = sigmoid(x);
 	return s * (1.0 - s);
 }
 
-static double relu(double x) {
+static inline double relu(double x) {
     return x > 0 ? x : 0;
 }
 
-static double d_relu(double x) {
+static inline double d_relu(double x) {
     return x > 0 ? 1 : 0; 
 }
 
@@ -44,7 +44,7 @@ static double fn_MSE(double *y_pred, double *y_true, int n_samples) {
 	return mse / (double) n_samples;
 }
 
-static double grad_MSE(double y_pred, double y_true, int n_samples) {
+static inline double grad_MSE(double y_pred, double y_true, int n_samples) {
 	return 2.0 * (y_pred - y_true);
 }
 
@@ -59,6 +59,6 @@ static double fn_BCE(double *y_pred, double *y_true, int n_samples) {
   return -bce/(double)n_samples; 
 }
 
-static double grad_BCE(double y_pred, double y_true, int n_samples) {
+static inline double grad_BCE(double y_pred, double y_true, int n_samples) {
   return -(y_true/y_pred - (1.0-y_true)/(1-y_pred));
 } 
